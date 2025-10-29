@@ -151,3 +151,4 @@ make clean
 - Top 3 resorts highlighted (gold/silver/bronze)
 - Responsive design
 - No JavaScript frameworks required
+
