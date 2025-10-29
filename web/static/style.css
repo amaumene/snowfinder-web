@@ -348,6 +348,34 @@ th.sort-desc {
     display: none;
 }
 
+.about-content h2 {
+    margin-top: 30px;
+    margin-bottom: 15px;
+}
+
+.about-content h2:first-of-type {
+    margin-top: 0;
+}
+
+.about-content p {
+    line-height: 1.8;
+    margin-bottom: 15px;
+}
+
+.about-content ul {
+    margin: 15px 0;
+    padding-left: 20px;
+}
+
+.about-content li {
+    margin-bottom: 15px;
+    line-height: 1.8;
+}
+
+.about-content li:last-child {
+    margin-bottom: 0;
+}
+
 @media (max-width: 768px) {
     header h1 {
         font-size: 2rem;

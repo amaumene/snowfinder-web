@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - SnowFinder</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>❄️ About SnowFinder</h1>
+        </header>
+
+        <main>
+            <div class="search-card about-content">
+                <h2>Project Overview</h2>
+                <p>SnowFinder analyzes historical snowfall data from 62+ Japanese ski resorts (seasons 2014-2025) sourced from SnowJapan.com to help you find the best powder conditions.</p>
+
+                <h2>Peak Period Detection Algorithm</h2>
+                <p>Our algorithm identifies the top 5 snowiest periods for each resort using a sophisticated approach:</p>
+                <ul>
+                    <li><strong>Rolling Window Analysis:</strong> We scan through historical data using flexible 2-7 day windows to capture both short intense dumps and sustained snowfall periods.</li>
+                    <li><strong>Prominence Scoring:</strong> Peaks are ranked not just by total snowfall, but by how much they stand out from surrounding periods - identifying true powder bonanzas rather than seasonal averages.</li>
+                    <li><strong>Statistical Validation:</strong> Each peak is assigned a confidence level (high/medium/low) based on data consistency across multiple seasons, ensuring reliable predictions.</li>
+                    <li><strong>Multi-Year Averaging:</strong> Dates represent historical patterns across all available seasons, smoothing out year-to-year variations to reveal true seasonal trends.</li>
+                </ul>
+
+                <p>The algorithm balances total snowfall volume, daily intensity, and statistical significance to surface the periods when resorts historically receive their best conditions. Confidence levels indicate data reliability: "high" means 4+ years of consistent data, "medium" means 2-3 years, and "low" means limited historical coverage.</p>
+
+                <p style="margin-top: 30px;"><a href="/">← Back to Search</a> | <a href="https://github.com/amaumene/snowfinder" target="_blank">View on GitHub</a></p>
+            </div>
+        </main>
+
+        <footer>
+            <p>
+                <a href="/">Home</a> |
+                Data sourced from <a href="https://www.snowjapan.com" target="_blank" rel="noopener noreferrer">SnowJapan.com</a> |
+                Historical averages calculated from seasons 2014-2025 |
+                <a href="https://github.com/amaumene/snowfinder-web" target="_blank" rel="noopener noreferrer">GitHub</a>
+            </p>
+        </footer>
+    </div>
+</body>
+</html>

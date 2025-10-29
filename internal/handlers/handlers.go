@@ -49,6 +49,13 @@ func (h *Handler) IndexHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func (h *Handler) AboutHandler(w http.ResponseWriter, r *http.Request) {
+	err := h.templates.ExecuteTemplate(w, "about.html", nil)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
 func (h *Handler) SearchHandler(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query()
 	startDate := query.Get("start_date")
