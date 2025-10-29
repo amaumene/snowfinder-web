@@ -2,11 +2,9 @@ module github.com/amaumene/snowfinder-web
 
 go 1.24.6
 
-replace github.com/amaumene/snowfinder-common => ../snowfinder-common
-
 require (
+	github.com/amaumene/snowfinder-common v0.0.0-20251029071025-8ad4f2a7d18f
 	github.com/jackc/pgx/v5 v5.7.6
-	github.com/amaumene/snowfinder-common v0.0.0-00010101000000-000000000000
 )
 
 require (
