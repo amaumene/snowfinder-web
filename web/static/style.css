@@ -208,6 +208,18 @@ footer {
     font-size: 0.9rem;
 }
 
+footer a {
+    color: #ffffff;
+    text-decoration: underline;
+    opacity: 0.9;
+    transition: opacity 0.2s;
+}
+
+footer a:hover {
+    opacity: 1;
+    text-decoration: none;
+}
+
 th.sortable {
     cursor: pointer;
     user-select: none;
