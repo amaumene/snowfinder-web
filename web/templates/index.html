@@ -15,63 +15,80 @@
         </header>
 
         <main>
-            <div class="search-card">
-                <h2>Search Snowiest Resorts</h2>
-                <form id="searchForm">
-                    <div class="form-group">
-                        <label for="dateRange">Select Dates</label>
-                        <input
-                            type="text"
-                            id="dateRange"
-                            name="date_range"
-                            placeholder="Click to select dates (any season)"
-                            required
-                            readonly>
-                        <small>Select days to see historical average snowfall across all seasons</small>
-                    </div>
+            <div class="cards-container">
+                <div class="search-card">
+                    <h2>Search Snowiest Resorts</h2>
+                    <form id="searchForm">
+                        <div class="form-group">
+                            <label for="dateRange">Select Dates</label>
+                            <input
+                                type="text"
+                                id="dateRange"
+                                name="date_range"
+                                placeholder="Click to select dates (any season)"
+                                required
+                                readonly>
+                            <small>Select days to see historical average snowfall across all seasons</small>
+                        </div>
 
-                    <div class="form-group">
-                        <label for="prefecture">Prefecture</label>
-                        <select id="prefecture" name="prefecture">
-                            <option value="all">All of Japan</option>
-                            <option value="hokkaido">Hokkaido</option>
-                            <option value="aomori">Aomori</option>
-                            <option value="iwate">Iwate</option>
-                            <option value="miyagi">Miyagi</option>
-                            <option value="akita">Akita</option>
-                            <option value="yamagata">Yamagata</option>
-                            <option value="fukushima">Fukushima</option>
-                            <option value="niigata">Niigata</option>
-                            <option value="nagano">Nagano</option>
-                            <option value="gunma">Gunma</option>
-                            <option value="tochigi">Tochigi</option>
-                            <option value="yamanashi">Yamanashi</option>
-                            <option value="shizuoka">Shizuoka</option>
-                            <option value="gifu">Gifu</option>
-                            <option value="toyama">Toyama</option>
-                            <option value="ishikawa">Ishikawa</option>
-                            <option value="fukui">Fukui</option>
-                            <option value="shiga">Shiga</option>
-                            <option value="hyogo">Hyogo</option>
-                            <option value="tottori">Tottori</option>
-                            <option value="shimane">Shimane</option>
-                            <option value="okayama">Okayama</option>
-                            <option value="hiroshima">Hiroshima</option>
-                            <option value="yamaguchi">Yamaguchi</option>
-                        </select>
-                    </div>
+                        <div class="form-group">
+                            <label for="prefecture">Prefecture</label>
+                            <select id="prefecture" name="prefecture">
+                                <option value="all">All of Japan</option>
+                                <option value="hokkaido">Hokkaido</option>
+                                <option value="aomori">Aomori</option>
+                                <option value="iwate">Iwate</option>
+                                <option value="miyagi">Miyagi</option>
+                                <option value="akita">Akita</option>
+                                <option value="yamagata">Yamagata</option>
+                                <option value="fukushima">Fukushima</option>
+                                <option value="niigata">Niigata</option>
+                                <option value="nagano">Nagano</option>
+                                <option value="gunma">Gunma</option>
+                                <option value="tochigi">Tochigi</option>
+                                <option value="yamanashi">Yamanashi</option>
+                                <option value="shizuoka">Shizuoka</option>
+                                <option value="gifu">Gifu</option>
+                                <option value="toyama">Toyama</option>
+                                <option value="ishikawa">Ishikawa</option>
+                                <option value="fukui">Fukui</option>
+                                <option value="shiga">Shiga</option>
+                                <option value="hyogo">Hyogo</option>
+                                <option value="tottori">Tottori</option>
+                                <option value="shimane">Shimane</option>
+                                <option value="okayama">Okayama</option>
+                                <option value="hiroshima">Hiroshima</option>
+                                <option value="yamaguchi">Yamaguchi</option>
+                            </select>
+                        </div>
 
-                    <div class="form-group">
-                        <label for="limit">Number of Results</label>
-                        <select id="limit" name="limit">
-                            <option value="10">Top 10</option>
-                            <option value="20">Top 20</option>
-                            <option value="50">Top 50</option>
-                        </select>
-                    </div>
+                        <div class="form-group">
+                            <label for="limit">Number of Results</label>
+                            <select id="limit" name="limit">
+                                <option value="10">Top 10</option>
+                                <option value="20">Top 20</option>
+                                <option value="50">Top 50</option>
+                            </select>
+                        </div>
 
-                    <button type="submit" class="btn-primary">Search Snowiest Resorts</button>
-                </form>
+                        <button type="submit" class="btn-primary">Search Snowiest Resorts</button>
+                    </form>
+                </div>
+
+                <div class="peak-info-card">
+                    <h2>Peak Snowfall Periods</h2>
+                    <form id="peakInfoForm">
+                        <div class="form-group">
+                            <label for="resortSelect">Select Resort</label>
+                            <select id="resortSelect" name="resort_id">
+                                <option value="all">All Resorts</option>
+                            </select>
+                            <small>View peak snowfall periods for specific resorts</small>
+                        </div>
+
+                        <button type="submit" class="btn-primary">View Peak Periods</button>
+                    </form>
+                </div>
             </div>
 
             <div id="loading" class="loading" style="display: none;">
@@ -106,6 +123,28 @@
             <div id="error" class="error-card" style="display: none;">
                 <h3>Error</h3>
                 <p id="errorMessage"></p>
+            </div>
+
+            <div id="peakResults" class="results-card" style="display: none;">
+                <h2 id="peakResultsTitle">Peak Snowfall Periods</h2>
+                <div id="peakResultsInfo" class="results-info"></div>
+                <div class="table-wrapper">
+                    <table id="peakResultsTable">
+                        <thead>
+                            <tr>
+                                <th class="sortable" data-column="name">Resort Name <span class="sort-arrow"></span></th>
+                                <th class="sortable" data-column="prefecture">Prefecture <span class="sort-arrow"></span></th>
+                                <th class="sortable" data-column="top">Top Elev (m) <span class="sort-arrow"></span></th>
+                                <th class="sortable" data-column="base">Base Elev (m) <span class="sort-arrow"></span></th>
+                                <th class="sortable" data-column="vertical">Vertical (m) <span class="sort-arrow"></span></th>
+                                <th class="sortable" data-column="courses">Courses <span class="sort-arrow"></span></th>
+                                <th class="sortable" data-column="peaks">Peak Periods (Best) <span class="sort-arrow"></span></th>
+                            </tr>
+                        </thead>
+                        <tbody id="peakResultsBody">
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </main>
 

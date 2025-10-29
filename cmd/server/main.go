@@ -44,6 +44,8 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", handler.IndexHandler)
 	mux.HandleFunc("/api/search", handler.SearchHandler)
+	mux.HandleFunc("/api/resorts-with-peaks", handler.ResortsWithPeaksHandler)
+	mux.HandleFunc("/api/peak-info", handler.PeakInfoHandler)
 	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("web/static"))))
 
 	port := os.Getenv("PORT")

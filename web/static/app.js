@@ -205,4 +205,187 @@ document.addEventListener('DOMContentLoaded', function() {
         arrow.textContent = ascending ? ' ▲' : ' ▼';
         activeHeader.classList.add(ascending ? 'sort-asc' : 'sort-desc');
     }
+
+    // ===== Peak Info Functionality =====
+    const peakInfoForm = document.getElementById('peakInfoForm');
+    const resortSelect = document.getElementById('resortSelect');
+    const peakResults = document.getElementById('peakResults');
+    const peakResultsBody = document.getElementById('peakResultsBody');
+    const peakResultsTitle = document.getElementById('peakResultsTitle');
+
+    // Load resort list on page load
+    async function loadResortsList() {
+        try {
+            const response = await fetch('/api/resorts-with-peaks');
+            if (!response.ok) {
+                throw new Error('Failed to load resorts list');
+            }
+            const resorts = await response.json();
+
+            // Sort resorts by name
+            resorts.sort((a, b) => a.name.localeCompare(b.name));
+
+            // Add options to select
+            resorts.forEach(resort => {
+                const option = document.createElement('option');
+                option.value = resort.id;
+                option.textContent = resort.name;
+                resortSelect.appendChild(option);
+            });
+        } catch (err) {
+            console.error('Error loading resorts:', err);
+        }
+    }
+
+    // Load resorts on page load
+    loadResortsList();
+
+    // Handle peak info form submission
+    peakInfoForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const resortId = resortSelect.value;
+
+        loading.style.display = 'block';
+        peakResults.style.display = 'none';
+        results.style.display = 'none';
+        error.style.display = 'none';
+
+        try {
+            const response = await fetch(`/api/peak-info?resort_id=${encodeURIComponent(resortId)}`);
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            loading.style.display = 'none';
+
+            if (resortId === 'all') {
+                // Display all resorts with peaks
+                displayPeakResults(data, true);
+            } else {
+                // Display single resort
+                displayPeakResults([data], false);
+            }
+
+        } catch (err) {
+            loading.style.display = 'none';
+            showError(err.message);
+        }
+    });
+
+    function displayPeakResults(data, isAllResorts) {
+        peakResultsBody.innerHTML = '';
+
+        if (isAllResorts) {
+            peakResultsTitle.textContent = `Peak Snowfall Periods - All Resorts (${data.length})`;
+        } else {
+            peakResultsTitle.textContent = `Peak Snowfall Periods - ${data[0].Resort.name}`;
+        }
+
+        data.forEach(resortData => {
+            const resort = resortData.Resort;
+            const peaks = resortData.Peaks || [];
+
+            if (peaks.length === 0) return;
+
+            const row = document.createElement('tr');
+
+            const formatValue = (val) => val != null ? val : '-';
+
+            // Create peaks cell content
+            let peaksHtml = '';
+            peaks.forEach(peak => {
+                const dateRange = peak.start_date === peak.end_date
+                    ? peak.start_date
+                    : `${peak.start_date} - ${peak.end_date}`;
+
+                peaksHtml += `
+                    <div class="peak-entry">
+                        <span class="peak-rank">#${peak.peak_rank}</span>
+                        <span class="peak-dates">${dateRange}</span>
+                        <span class="peak-snowfall">${Math.round(peak.total_period_snowfall)}cm (${peak.avg_daily_snowfall.toFixed(1)}cm/day)</span>
+                        <span class="peak-confidence confidence-${peak.confidence_level}">${peak.confidence_level}</span>
+                    </div>
+                `;
+            });
+
+            const topPeakSnowfall = peaks.length > 0 ? peaks[0].total_period_snowfall : 0;
+
+            row.innerHTML = `
+                <td><div class="resort-name">${resort.name}</div></td>
+                <td>${resort.prefecture}</td>
+                <td>${formatValue(resort.top_elevation_m)}</td>
+                <td>${formatValue(resort.base_elevation_m)}</td>
+                <td>${formatValue(resort.vertical_m)}</td>
+                <td>${formatValue(resort.num_courses)}</td>
+                <td class="peaks-cell" data-peak-snowfall="${topPeakSnowfall}">${peaksHtml}</td>
+            `;
+
+            // Add data attributes for sorting
+            row.dataset.name = resort.name.toLowerCase();
+            row.dataset.prefecture = resort.prefecture.toLowerCase();
+            row.dataset.top = resort.top_elevation_m != null ? resort.top_elevation_m : -1;
+            row.dataset.base = resort.base_elevation_m != null ? resort.base_elevation_m : -1;
+            row.dataset.vertical = resort.vertical_m != null ? resort.vertical_m : -1;
+            row.dataset.courses = resort.num_courses != null ? resort.num_courses : -1;
+            row.dataset.peaks = topPeakSnowfall;
+
+            peakResultsBody.appendChild(row);
+        });
+
+        peakResults.style.display = 'block';
+        peakResults.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+        // Setup sorting for peak results table
+        setupPeakTableSorting();
+    }
+
+    function setupPeakTableSorting() {
+        const peakTable = document.getElementById('peakResultsTable');
+        const headers = peakTable.querySelectorAll('.sortable');
+
+        headers.forEach(header => {
+            // Remove any existing listeners
+            const newHeader = header.cloneNode(true);
+            header.parentNode.replaceChild(newHeader, header);
+        });
+
+        peakTable.querySelectorAll('.sortable').forEach(header => {
+            header.addEventListener('click', function() {
+                const column = this.dataset.column;
+                const tbody = peakResultsBody;
+                const rows = Array.from(tbody.querySelectorAll('tr'));
+                const isAscending = this.classList.contains('asc');
+
+                // Clear all sort indicators
+                peakTable.querySelectorAll('.sortable').forEach(h => {
+                    h.classList.remove('asc', 'desc');
+                });
+
+                // Set current sort indicator
+                this.classList.add(isAscending ? 'desc' : 'asc');
+
+                rows.sort((a, b) => {
+                    let aVal = a.dataset[column];
+                    let bVal = b.dataset[column];
+
+                    if (column === 'name' || column === 'prefecture') {
+                        return isAscending
+                            ? bVal.localeCompare(aVal)
+                            : aVal.localeCompare(bVal);
+                    } else {
+                        aVal = parseFloat(aVal);
+                        bVal = parseFloat(bVal);
+                        return isAscending ? bVal - aVal : aVal - bVal;
+                    }
+                });
+
+                tbody.innerHTML = '';
+                rows.forEach(row => tbody.appendChild(row));
+            });
+        });
+    }
 });

@@ -122,6 +122,75 @@ func (h *Handler) convertToResortResults(stats []models.WeeklyResortStats) []Res
 	return results
 }
 
+func (h *Handler) ResortsWithPeaksHandler(w http.ResponseWriter, r *http.Request) {
+	ctx, cancel := context.WithTimeout(r.Context(), 10*time.Second)
+	defer cancel()
+
+	resortsWithPeaks, err := h.repo.GetAllResortsWithPeaks(ctx)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Simplify response for dropdown - just ID and name
+	type ResortOption struct {
+		ID   string `json:"id"`
+		Name string `json:"name"`
+	}
+
+	options := make([]ResortOption, len(resortsWithPeaks))
+	for i, rp := range resortsWithPeaks {
+		options[i] = ResortOption{
+			ID:   rp.Resort.ID,
+			Name: rp.Resort.Name,
+		}
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(options)
+}
+
+func (h *Handler) PeakInfoHandler(w http.ResponseWriter, r *http.Request) {
+	ctx, cancel := context.WithTimeout(r.Context(), 30*time.Second)
+	defer cancel()
+
+	resortID := r.URL.Query().Get("resort_id")
+
+	// If no resort_id or "all", return all resorts with peaks
+	if resortID == "" || resortID == "all" {
+		resortsWithPeaks, err := h.repo.GetAllResortsWithPeaks(ctx)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(resortsWithPeaks)
+		return
+	}
+
+	// Get specific resort with peaks
+	resort, err := h.repo.GetResortByID(ctx, resortID)
+	if err != nil {
+		http.Error(w, "Resort not found", http.StatusNotFound)
+		return
+	}
+
+	peaks, err := h.repo.GetPeakPeriodsForResort(ctx, resort.ID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	response := models.ResortWithPeaks{
+		Resort: *resort,
+		Peaks:  peaks,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}
+
 func isValidMonthDay(monthDay string) bool {
 	if len(monthDay) != 5 || monthDay[2] != '-' {
 		return false
