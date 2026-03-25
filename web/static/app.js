@@ -47,6 +47,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    const searchBtn = form.querySelector('button[type="submit"]');
+    const peakBtn = document.querySelector('#peakInfoForm button[type="submit"]');
+
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
 
@@ -66,6 +69,7 @@ document.addEventListener('DOMContentLoaded', function() {
         params.append('prefecture', formData.get('prefecture'));
         params.append('limit', formData.get('limit'));
 
+        searchBtn.disabled = true;
         loading.style.display = 'block';
         results.style.display = 'none';
         error.style.display = 'none';
@@ -95,6 +99,8 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (err) {
             loading.style.display = 'none';
             showError(err.message);
+        } finally {
+            searchBtn.disabled = false;
         }
     });
 
@@ -257,6 +263,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const resortId = resortSelect.value;
 
+        peakBtn.disabled = true;
         loading.style.display = 'block';
         peakResults.style.display = 'none';
         results.style.display = 'none';
@@ -284,6 +291,8 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (err) {
             loading.style.display = 'none';
             showError(err.message);
+        } finally {
+            peakBtn.disabled = false;
         }
     });
 
