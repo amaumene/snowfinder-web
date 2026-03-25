@@ -10,13 +10,23 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/amaumene/snowfinder-common/config"
 	"github.com/amaumene/snowfinder-common/repository"
 	"github.com/amaumene/snowfinder-web/internal/handlers"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 const defaultPort = "8080"
+
+func securityHeaders(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("X-Content-Type-Options", "nosniff")
+		w.Header().Set("X-Frame-Options", "DENY")
+		w.Header().Set("Referrer-Policy", "strict-origin-when-cross-origin")
+		w.Header().Set("Content-Security-Policy", "default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'")
+		next.ServeHTTP(w, r)
+	})
+}
 
 func main() {
 	ctx := context.Background()
@@ -54,9 +64,12 @@ func main() {
 		port = defaultPort
 	}
 
+	// Wrap mux with security headers middleware
+	wrappedHandler := securityHeaders(mux)
+
 	server := &http.Server{
 		Addr:         ":" + port,
-		Handler:      mux,
+		Handler:      wrappedHandler,
 		ReadTimeout:  15 * time.Second,
 		WriteTimeout: 15 * time.Second,
 		IdleTimeout:  60 * time.Second,
