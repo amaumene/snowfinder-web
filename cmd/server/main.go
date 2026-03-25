@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"sync"
 	"syscall"
 	"time"
 
@@ -17,6 +18,56 @@ import (
 )
 
 const defaultPort = "8080"
+
+type ipRateLimiter struct {
+	mu       sync.Mutex
+	visitors map[string][]time.Time
+	limit    int
+	window   time.Duration
+}
+
+func newIPRateLimiter(limit int, window time.Duration) *ipRateLimiter {
+	return &ipRateLimiter{
+		visitors: make(map[string][]time.Time),
+		limit:    limit,
+		window:   window,
+	}
+}
+
+func (rl *ipRateLimiter) allow(ip string) bool {
+	rl.mu.Lock()
+	defer rl.mu.Unlock()
+
+	now := time.Now()
+	cutoff := now.Add(-rl.window)
+
+	// Clean old entries
+	visits := rl.visitors[ip]
+	clean := visits[:0]
+	for _, t := range visits {
+		if t.After(cutoff) {
+			clean = append(clean, t)
+		}
+	}
+
+	if len(clean) >= rl.limit {
+		rl.visitors[ip] = clean
+		return false
+	}
+
+	rl.visitors[ip] = append(clean, now)
+	return true
+}
+
+func rateLimitMiddleware(limiter *ipRateLimiter, next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if !limiter.allow(r.RemoteAddr) {
+			http.Error(w, "Too Many Requests", http.StatusTooManyRequests)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
+}
 
 func securityHeaders(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -64,8 +115,9 @@ func main() {
 		port = defaultPort
 	}
 
-	// Wrap mux with security headers middleware
-	wrappedHandler := securityHeaders(mux)
+	// Apply middleware: rate limiting -> security headers -> mux
+	limiter := newIPRateLimiter(30, time.Minute) // 30 requests per minute per IP
+	wrappedHandler := rateLimitMiddleware(limiter, securityHeaders(mux))
 
 	server := &http.Server{
 		Addr:         ":" + port,
