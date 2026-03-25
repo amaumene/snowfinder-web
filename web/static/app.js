@@ -13,7 +13,13 @@ document.addEventListener('DOMContentLoaded', function() {
     flatpickr(dateRangeInput, {
         mode: "range",
         dateFormat: "M j",
-        defaultDate: ["2025-01-15", "2025-01-20"],
+        defaultDate: (function() {
+            const now = new Date();
+            const month = now.getMonth(); // 0-11
+            // If between Oct-Apr, use current season; otherwise use last season
+            const year = (month >= 9) ? now.getFullYear() : now.getFullYear() - 1;
+            return [new Date(year + 1, 0, 15), new Date(year + 1, 0, 20)];
+        })(),
         onReady: function(selectedDates, dateStr, instance) {
             const yearElement = instance.currentYearElement;
             if (yearElement) {
@@ -25,7 +31,10 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         },
         onOpen: function(selectedDates, dateStr, instance) {
-            instance.jumpToDate(new Date(2025, 0, 15));
+            const now = new Date();
+            const month = now.getMonth();
+            const year = (month >= 9) ? now.getFullYear() : now.getFullYear() - 1;
+            instance.jumpToDate(new Date(year + 1, 0, 15));
         },
         onMonthChange: function(selectedDates, dateStr, instance) {
             const yearElement = instance.currentYearElement;
