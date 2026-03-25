@@ -4,7 +4,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const results = document.getElementById('results');
     const error = document.getElementById('error');
     const resultsBody = document.getElementById('resultsBody');
-    const resultsInfo = document.getElementById('resultsInfo');
     const errorMessage = document.getElementById('errorMessage');
     const dateRangeInput = document.getElementById('dateRange');
 
@@ -117,8 +116,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 day: 'numeric'
             });
         };
-
-        resultsInfo.textContent = '';
 
         resultsBody.innerHTML = '';
 

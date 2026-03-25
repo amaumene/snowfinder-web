@@ -142,9 +142,7 @@ header h1 {
     100% { transform: rotate(360deg); }
 }
 
-.results-info {
-    display: none;
-}
+
 
 .table-wrapper {
     overflow-x: auto;
