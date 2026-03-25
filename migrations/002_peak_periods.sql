@@ -21,7 +21,6 @@ CREATE TABLE IF NOT EXISTS resort_peak_periods (
 
 -- Indexes for performance
 CREATE INDEX idx_resort_peak_periods_resort ON resort_peak_periods(resort_id);
-CREATE INDEX idx_resort_peak_periods_calculated ON resort_peak_periods(calculated_at);
 
 -- Verification
 SELECT 'Peak periods table created successfully!' as status;

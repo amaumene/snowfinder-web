@@ -37,7 +37,7 @@ CREATE TABLE daily_snowfall (
 -- ============================================================
 -- Indexes for query performance
 -- ============================================================
-CREATE INDEX idx_resorts_slug ON resorts(slug);
+-- slug index not needed: already has unique constraint index
 CREATE INDEX idx_resorts_prefecture ON resorts(prefecture);
 CREATE INDEX idx_daily_snowfall_date ON daily_snowfall(date);
 CREATE INDEX idx_daily_snowfall_season ON daily_snowfall(season);
