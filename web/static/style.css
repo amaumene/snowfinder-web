@@ -280,119 +280,23 @@ th.sort-desc {
     margin-top: 20px;
 }
 
-.peak-results .table-wrapper {
-    margin-top: 15px;
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
 }
 
-.peaks-cell {
-    font-size: 0.9em;
-    line-height: 1.6;
+.table-wrapper {
+    overflow-x: auto;
 }
 
-.peak-entry {
-    margin: 0.25em 0;
-    padding: 0.25em 0;
-}
-
-.peak-entry:not(:last-child) {
-    border-bottom: 1px solid #eee;
-}
-
-.peak-rank {
-    font-weight: bold;
-    color: #667eea;
-    margin-right: 0.5em;
-}
-
-.peak-dates {
-    color: #333;
-    font-weight: 500;
-}
-
-.peak-snowfall {
-    color: #4a90e2;
-    margin-left: 0.5em;
-}
-
-.peak-confidence {
-    margin-left: 0.5em;
-    padding: 0.15em 0.4em;
-    border-radius: 3px;
-    font-size: 0.85em;
-    font-weight: 500;
-}
-
-.confidence-high {
-    background-color: #d4edda;
-    color: #155724;
-}
-
-.confidence-medium {
-    background-color: #fff3cd;
-    color: #856404;
-}
-
-.confidence-low {
-    background-color: #f8d7da;
-    color: #721c24;
-}
-
-.resort-name {
-    font-weight: 600;
-    color: #667eea;
-}
-
-#peakResults {
-    display: none;
-}
-
-.about-content h2 {
-    margin-top: 30px;
-    margin-bottom: 15px;
-}
-
-.about-content h2:first-of-type {
-    margin-top: 0;
-}
-
-.about-content p {
-    line-height: 1.8;
-    margin-bottom: 15px;
-}
-
-.about-content ul {
-    margin: 15px 0;
-    padding-left: 20px;
-}
-
-.about-content li {
-    margin-bottom: 15px;
-    line-height: 1.8;
-}
-
-.about-content li:last-child {
-    margin-bottom: 0;
-}
-
-.about-back-link {
-    margin-top: 30px;
-}
-
-@media (max-width: 768px) {
-    header h1 {
-        font-size: 2rem;
-    }
-
-    .cards-container {
-        grid-template-columns: 1fr;
-        gap: 20px;
-    }
-
-    .search-card, .peak-info-card, .results-card {
-        padding: 20px;
-    }
-
-    table {
+table {
         font-size: 0.9rem;
     }
 
