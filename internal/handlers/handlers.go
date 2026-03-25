@@ -90,6 +90,9 @@ func (h *Handler) SearchHandler(w http.ResponseWriter, r *http.Request) {
 			limit = parsed
 		}
 	}
+	if limit > 100 {
+		limit = 100
+	}
 
 	ctx, cancel := context.WithTimeout(r.Context(), 10*time.Second)
 	defer cancel()
