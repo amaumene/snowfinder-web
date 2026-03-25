@@ -80,11 +80,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
-            const data = await response.json();
+            const json = await response.json();
+            const data = json.data || json;
 
             loading.style.display = 'none';
 
-            if (data.length === 0) {
+            if (!data || data.length === 0) {
                 showError('No results found for the selected criteria.');
                 return;
             }

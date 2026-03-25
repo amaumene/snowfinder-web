@@ -127,8 +127,13 @@ func (h *Handler) SearchHandler(w http.ResponseWriter, r *http.Request) {
 
 	results := h.convertToResortResults(stats)
 
+	response := map[string]interface{}{
+		"data":  results,
+		"total": len(results),
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(results); err != nil {
+	if err := json.NewEncoder(w).Encode(response); err != nil {
 		log.Printf("ERROR: encode search results: %v", err)
 	}
 }
