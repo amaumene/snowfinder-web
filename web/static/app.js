@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', function() {
         error.style.display = 'none';
 
         try {
-            const response = await fetch(`/api/search?${params.toString()}`);
+            const response = await fetch(`/api/v1/search?${params.toString()}`);
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -231,7 +231,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Load resort list on page load
     async function loadResortsList() {
         try {
-            const response = await fetch('/api/resorts-with-peaks');
+            const response = await fetch('/api/v1/resorts-with-peaks');
             if (!response.ok) {
                 throw new Error('Failed to load resorts list');
             }
@@ -268,7 +268,7 @@ document.addEventListener('DOMContentLoaded', function() {
         error.style.display = 'none';
 
         try {
-            const response = await fetch(`/api/peak-info?resort_id=${encodeURIComponent(resortId)}`);
+            const response = await fetch(`/api/v1/peak-info?resort_id=${encodeURIComponent(resortId)}`);
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);

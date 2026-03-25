@@ -111,6 +111,10 @@ func main() {
 		handler.IndexHandler(w, r)
 	})
 	mux.HandleFunc("/about", handler.AboutHandler)
+	mux.HandleFunc("/api/v1/search", handler.SearchHandler)
+	mux.HandleFunc("/api/v1/resorts-with-peaks", handler.ResortsWithPeaksHandler)
+	mux.HandleFunc("/api/v1/peak-info", handler.PeakInfoHandler)
+	// Backward compatibility: redirect old API paths
 	mux.HandleFunc("/api/search", handler.SearchHandler)
 	mux.HandleFunc("/api/resorts-with-peaks", handler.ResortsWithPeaksHandler)
 	mux.HandleFunc("/api/peak-info", handler.PeakInfoHandler)
