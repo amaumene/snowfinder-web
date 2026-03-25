@@ -103,7 +103,13 @@ func main() {
 	}
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("/", handler.IndexHandler)
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/" {
+			http.NotFound(w, r)
+			return
+		}
+		handler.IndexHandler(w, r)
+	})
 	mux.HandleFunc("/about", handler.AboutHandler)
 	mux.HandleFunc("/api/search", handler.SearchHandler)
 	mux.HandleFunc("/api/resorts-with-peaks", handler.ResortsWithPeaksHandler)
