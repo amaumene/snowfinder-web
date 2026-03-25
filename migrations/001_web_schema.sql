@@ -2,12 +2,6 @@
 -- Web Interface Schema - Minimal tables for read-only queries
 -- ============================================================
 
--- Drop all existing tables/views first
-DROP TABLE IF EXISTS daily_snowfall CASCADE;
-DROP TABLE IF EXISTS snow_depth_readings CASCADE;
-DROP TABLE IF EXISTS resorts CASCADE;
-DROP MATERIALIZED VIEW IF EXISTS weekly_snowfall_stats CASCADE;
-
 -- ============================================================
 -- Table: resorts
 -- Stores ski resort metadata
