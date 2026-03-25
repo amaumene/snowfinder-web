@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"html/template"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -45,14 +46,16 @@ func NewHandler(repo repository.Reader) (*Handler, error) {
 func (h *Handler) IndexHandler(w http.ResponseWriter, r *http.Request) {
 	err := h.templates.ExecuteTemplate(w, "index.html", nil)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Printf("ERROR: render index template: %v", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 	}
 }
 
 func (h *Handler) AboutHandler(w http.ResponseWriter, r *http.Request) {
 	err := h.templates.ExecuteTemplate(w, "about.html", nil)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Printf("ERROR: render about template: %v", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 	}
 }
 
@@ -93,7 +96,8 @@ func (h *Handler) SearchHandler(w http.ResponseWriter, r *http.Request) {
 
 	stats, err := h.searchSnowiestResorts(ctx, startDate, endDate, prefecture, limit)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Printf("ERROR: search resorts: %v", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
@@ -135,7 +139,8 @@ func (h *Handler) ResortsWithPeaksHandler(w http.ResponseWriter, r *http.Request
 
 	resortsWithPeaks, err := h.repo.GetAllResortsWithPeaks(ctx)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Printf("ERROR: get resorts with peaks: %v", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
@@ -167,7 +172,8 @@ func (h *Handler) PeakInfoHandler(w http.ResponseWriter, r *http.Request) {
 	if resortID == "" || resortID == "all" {
 		resortsWithPeaks, err := h.repo.GetAllResortsWithPeaks(ctx)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Printf("ERROR: get all resorts with peaks: %v", err)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
 		}
 
@@ -185,7 +191,8 @@ func (h *Handler) PeakInfoHandler(w http.ResponseWriter, r *http.Request) {
 
 	peaks, err := h.repo.GetPeakPeriodsForResort(ctx, resort.ID)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Printf("ERROR: get peak periods for resort %s: %v", resort.ID, err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
