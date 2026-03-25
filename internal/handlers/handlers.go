@@ -119,7 +119,9 @@ func (h *Handler) SearchHandler(w http.ResponseWriter, r *http.Request) {
 	results := h.convertToResortResults(stats)
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(results)
+	if err := json.NewEncoder(w).Encode(results); err != nil {
+		log.Printf("ERROR: encode search results: %v", err)
+	}
 }
 
 func (h *Handler) searchSnowiestResorts(ctx context.Context, startDate, endDate, prefecture string, limit int) ([]models.WeeklyResortStats, error) {
@@ -178,7 +180,9 @@ func (h *Handler) ResortsWithPeaksHandler(w http.ResponseWriter, r *http.Request
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(options)
+	if err := json.NewEncoder(w).Encode(options); err != nil {
+		log.Printf("ERROR: encode resort options: %v", err)
+	}
 }
 
 func (h *Handler) PeakInfoHandler(w http.ResponseWriter, r *http.Request) {
@@ -201,7 +205,9 @@ func (h *Handler) PeakInfoHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(resortsWithPeaks)
+		if err := json.NewEncoder(w).Encode(resortsWithPeaks); err != nil {
+			log.Printf("ERROR: encode resorts with peaks: %v", err)
+		}
 		return
 	}
 
@@ -225,7 +231,9 @@ func (h *Handler) PeakInfoHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(response)
+	if err := json.NewEncoder(w).Encode(response); err != nil {
+		log.Printf("ERROR: encode peak info response: %v", err)
+	}
 }
 
 func isValidMonthDay(monthDay string) bool {
