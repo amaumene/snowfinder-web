@@ -96,9 +96,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function displayResults(data, searchParams) {
-        const prefectureText = searchParams.prefecture === 'all' ? 'All of Japan' :
-            searchParams.prefecture.charAt(0).toUpperCase() + searchParams.prefecture.slice(1);
-
         const formatDisplayDate = (date) => {
             return date.toLocaleDateString('en-US', {
                 month: 'short',
@@ -106,35 +103,40 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         };
 
-        const isSameDay = searchParams.startDate.toDateString() === searchParams.endDate.toDateString();
-        const dateRangeText = isSameDay
-            ? formatDisplayDate(searchParams.startDate)
-            : `${formatDisplayDate(searchParams.startDate)} - ${formatDisplayDate(searchParams.endDate)}`;
-
-        const dayCount = Math.ceil((searchParams.endDate - searchParams.startDate) / (1000 * 60 * 60 * 24)) + 1;
-
-        resultsInfo.innerHTML = '';
+        resultsInfo.textContent = '';
 
         resultsBody.innerHTML = '';
 
+        const formatValue = (val) => val != null ? val : '-';
+        const formatSnowfall = (val) => val != null ? `${val} cm` : '-';
+
         data.forEach(resort => {
             const row = document.createElement('tr');
-            const rankClass = resort.Rank <= 3 ? ` class="rank-${resort.Rank}"` : '';
 
-            const formatValue = (val) => val != null ? val : '-';
-            const formatSnowfall = (val) => val != null ? `${val} cm` : '-';
+            const cells = [
+                { text: resort.Rank, rankClass: resort.Rank <= 3 ? `rank-${resort.Rank}` : '' },
+                { text: resort.Name },
+                { text: resort.Prefecture.charAt(0).toUpperCase() + resort.Prefecture.slice(1) },
+                { text: formatSnowfall(resort.AvgSnowfall), bold: true },
+                { text: formatValue(resort.YearsWithData) },
+                { text: formatValue(resort.TopElevation) },
+                { text: formatValue(resort.BaseElevation) },
+                { text: formatValue(resort.VerticalDrop) },
+                { text: formatValue(resort.NumCourses) }
+            ];
 
-            row.innerHTML = `
-                <td${rankClass}>${resort.Rank}</td>
-                <td>${resort.Name}</td>
-                <td>${resort.Prefecture.charAt(0).toUpperCase() + resort.Prefecture.slice(1)}</td>
-                <td><strong>${formatSnowfall(resort.AvgSnowfall)}</strong></td>
-                <td>${formatValue(resort.YearsWithData)}</td>
-                <td>${formatValue(resort.TopElevation)}</td>
-                <td>${formatValue(resort.BaseElevation)}</td>
-                <td>${formatValue(resort.VerticalDrop)}</td>
-                <td>${formatValue(resort.NumCourses)}</td>
-            `;
+            cells.forEach(cell => {
+                const td = document.createElement('td');
+                if (cell.rankClass) td.className = cell.rankClass;
+                if (cell.bold) {
+                    const strong = document.createElement('strong');
+                    strong.textContent = cell.text;
+                    td.appendChild(strong);
+                } else {
+                    td.textContent = cell.text;
+                }
+                row.appendChild(td);
+            });
 
             row.dataset.rank = resort.Rank;
             row.dataset.name = resort.Name.toLowerCase();
@@ -314,15 +316,31 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const topPeakSnowfall = peaks.length > 0 ? peaks[0].total_period_snowfall : 0;
 
-            row.innerHTML = `
-                <td><div class="resort-name">${resort.name}</div></td>
-                <td>${resort.prefecture}</td>
-                <td>${formatValue(resort.top_elevation_m)}</td>
-                <td>${formatValue(resort.base_elevation_m)}</td>
-                <td>${formatValue(resort.vertical_m)}</td>
-                <td>${formatValue(resort.num_courses)}</td>
-                <td class="peaks-cell" data-peak-snowfall="${topPeakSnowfall}">${peaksHtml}</td>
-            `;
+            const tdName = document.createElement('td');
+            const nameDiv = document.createElement('div');
+            nameDiv.className = 'resort-name';
+            nameDiv.textContent = resort.name;
+            tdName.appendChild(nameDiv);
+            row.appendChild(tdName);
+
+            const textCells = [
+                resort.prefecture,
+                formatValue(resort.top_elevation_m),
+                formatValue(resort.base_elevation_m),
+                formatValue(resort.vertical_m),
+                formatValue(resort.num_courses)
+            ];
+            textCells.forEach(text => {
+                const td = document.createElement('td');
+                td.textContent = text;
+                row.appendChild(td);
+            });
+
+            const peaksTd = document.createElement('td');
+            peaksTd.className = 'peaks-cell';
+            peaksTd.dataset.peakSnowfall = topPeakSnowfall;
+            peaksTd.innerHTML = peaksHtml;
+            row.appendChild(peaksTd);
 
             // Add data attributes for sorting
             row.dataset.name = resort.name.toLowerCase();
