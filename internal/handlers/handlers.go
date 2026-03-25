@@ -19,16 +19,16 @@ type Handler struct {
 }
 
 type ResortResult struct {
-	Rank            int
-	Name            string
-	Prefecture      string
-	AvgSnowfall     *int
-	YearsWithData   *int
-	TopElevation    *int
-	BaseElevation   *int
-	VerticalDrop    *int
-	NumCourses      *int
-	LongestCourseKM *float64
+	Rank            int      `json:"rank"`
+	Name            string   `json:"name"`
+	Prefecture      string   `json:"prefecture"`
+	AvgSnowfall     *int     `json:"avg_snowfall"`
+	YearsWithData   *int     `json:"years_with_data"`
+	TopElevation    *int     `json:"top_elevation"`
+	BaseElevation   *int     `json:"base_elevation"`
+	VerticalDrop    *int     `json:"vertical_drop"`
+	NumCourses      *int     `json:"num_courses"`
+	LongestCourseKM *float64 `json:"longest_course_km"`
 }
 
 func NewHandler(repo repository.Reader) (*Handler, error) {
