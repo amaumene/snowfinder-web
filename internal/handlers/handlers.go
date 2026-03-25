@@ -234,10 +234,10 @@ func (h *Handler) PeakInfoHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response := models.ResortWithPeaks{
+	response := []models.ResortWithPeaks{{
 		Resort: *resort,
 		Peaks:  peaks,
-	}
+	}}
 
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(response); err != nil {
