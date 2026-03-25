@@ -44,6 +44,10 @@ func NewHandler(repo repository.Reader) (*Handler, error) {
 }
 
 func (h *Handler) IndexHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 	err := h.templates.ExecuteTemplate(w, "index.html", nil)
 	if err != nil {
 		log.Printf("ERROR: render index template: %v", err)
@@ -52,6 +56,10 @@ func (h *Handler) IndexHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) AboutHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 	err := h.templates.ExecuteTemplate(w, "about.html", nil)
 	if err != nil {
 		log.Printf("ERROR: render about template: %v", err)
@@ -60,6 +68,10 @@ func (h *Handler) AboutHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) SearchHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 	query := r.URL.Query()
 	startDate := query.Get("start_date")
 	endDate := query.Get("end_date")
@@ -137,6 +149,10 @@ func (h *Handler) convertToResortResults(stats []models.WeeklyResortStats) []Res
 }
 
 func (h *Handler) ResortsWithPeaksHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 	ctx, cancel := context.WithTimeout(r.Context(), 10*time.Second)
 	defer cancel()
 
@@ -166,6 +182,10 @@ func (h *Handler) ResortsWithPeaksHandler(w http.ResponseWriter, r *http.Request
 }
 
 func (h *Handler) PeakInfoHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 	ctx, cancel := context.WithTimeout(r.Context(), 30*time.Second)
 	defer cancel()
 
