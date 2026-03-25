@@ -31,6 +31,15 @@ type ResortResult struct {
 	LongestCourseKM *float64 `json:"longest_course_km"`
 }
 
+func jsonError(w http.ResponseWriter, message string, code int) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(code)
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"error": message,
+		"code":  code,
+	})
+}
+
 func NewHandler(repo repository.Reader) (*Handler, error) {
 	tmpl, err := template.ParseGlob("web/templates/*.html")
 	if err != nil {
@@ -69,7 +78,7 @@ func (h *Handler) AboutHandler(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) SearchHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
-		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		jsonError(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 		return
 	}
 	query := r.URL.Query()
@@ -79,19 +88,19 @@ func (h *Handler) SearchHandler(w http.ResponseWriter, r *http.Request) {
 	limitStr := query.Get("limit")
 
 	if startDate == "" {
-		http.Error(w, "start_date is required in MM-DD format", http.StatusBadRequest)
+		jsonError(w, "start_date is required in MM-DD format", http.StatusBadRequest)
 		return
 	}
 
 	if !isValidMonthDay(startDate) {
-		http.Error(w, "start_date must be in MM-DD format (e.g., 02-08)", http.StatusBadRequest)
+		jsonError(w, "start_date must be in MM-DD format (e.g., 02-08)", http.StatusBadRequest)
 		return
 	}
 
 	if endDate == "" {
 		endDate = startDate
 	} else if !isValidMonthDay(endDate) {
-		http.Error(w, "end_date must be in MM-DD format (e.g., 02-14)", http.StatusBadRequest)
+		jsonError(w, "end_date must be in MM-DD format (e.g., 02-14)", http.StatusBadRequest)
 		return
 	}
 
@@ -112,7 +121,7 @@ func (h *Handler) SearchHandler(w http.ResponseWriter, r *http.Request) {
 	stats, err := h.searchSnowiestResorts(ctx, startDate, endDate, prefecture, limit)
 	if err != nil {
 		log.Printf("ERROR: search resorts: %v", err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		jsonError(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
@@ -152,7 +161,7 @@ func (h *Handler) convertToResortResults(stats []models.WeeklyResortStats) []Res
 
 func (h *Handler) ResortsWithPeaksHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
-		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		jsonError(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 		return
 	}
 	ctx, cancel := context.WithTimeout(r.Context(), 10*time.Second)
@@ -161,7 +170,7 @@ func (h *Handler) ResortsWithPeaksHandler(w http.ResponseWriter, r *http.Request
 	resortsWithPeaks, err := h.repo.GetAllResortsWithPeaks(ctx)
 	if err != nil {
 		log.Printf("ERROR: get resorts with peaks: %v", err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		jsonError(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
@@ -187,7 +196,7 @@ func (h *Handler) ResortsWithPeaksHandler(w http.ResponseWriter, r *http.Request
 
 func (h *Handler) PeakInfoHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
-		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		jsonError(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 		return
 	}
 	ctx, cancel := context.WithTimeout(r.Context(), 30*time.Second)
@@ -200,7 +209,7 @@ func (h *Handler) PeakInfoHandler(w http.ResponseWriter, r *http.Request) {
 		resortsWithPeaks, err := h.repo.GetAllResortsWithPeaks(ctx)
 		if err != nil {
 			log.Printf("ERROR: get all resorts with peaks: %v", err)
-			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			jsonError(w, "Internal Server Error", http.StatusInternalServerError)
 			return
 		}
 
@@ -214,14 +223,14 @@ func (h *Handler) PeakInfoHandler(w http.ResponseWriter, r *http.Request) {
 	// Get specific resort with peaks
 	resort, err := h.repo.GetResortByID(ctx, resortID)
 	if err != nil {
-		http.Error(w, "Resort not found", http.StatusNotFound)
+		jsonError(w, "Resort not found", http.StatusNotFound)
 		return
 	}
 
 	peaks, err := h.repo.GetPeakPeriodsForResort(ctx, resort.ID)
 	if err != nil {
 		log.Printf("ERROR: get peak periods for resort %s: %v", resort.ID, err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		jsonError(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
